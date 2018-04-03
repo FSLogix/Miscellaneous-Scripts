@@ -32,11 +32,11 @@ function Rename-SingleDisk {
         try{
             Rename-Item -Path $Path -NewName $NewName -ErrorAction Stop
             Write-Log "Renamed $Path to $NewName" -Path $LogDir
+            Write-Verbose "Renamed $Path to $NewName"
         }
         catch{
             Write-Log -Level Error "Failed to rename $Path" -Path $LogDir
         }
-        
     } #Process
     END {} #End
 }  #function Rename-SingleDisk
