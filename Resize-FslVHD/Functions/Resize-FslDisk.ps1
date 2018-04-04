@@ -1,4 +1,4 @@
-function Resize-FslVHD {
+function Resize-FslDisk {
     [CmdletBinding()]
 
     Param (
@@ -43,11 +43,12 @@ function Resize-FslVHD {
             Position = 0,
             ValuefromPipelineByPropertyName = $true
         )]
-        [string]$LogDir
+        [string]$LogDir = "$env:TEMP\Resize-FslDisk.log"
     )
 
     BEGIN {
         Set-StrictMode -Version Latest
+        #Write-Log
     } # Begin
     PROCESS {
         switch ($PSCmdlet.ParameterSetName) {
@@ -88,4 +89,4 @@ function Resize-FslVHD {
         }
     } #Process
     END {} #End
-}  #function Resize-FslVHD
+}  #function Resize-FslDisk
