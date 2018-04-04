@@ -126,6 +126,7 @@ function Resize-FslDisk {
                 Write-Verbose "Finished: $($MyInvocation.Mycommand)"
             }
         } # enable logging
+        
     } # Begin
     PROCESS {
         switch ($PSCmdlet.ParameterSetName) {
