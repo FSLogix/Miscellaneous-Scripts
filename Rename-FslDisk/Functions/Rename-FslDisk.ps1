@@ -1,4 +1,4 @@
-function Rename-Disk {
+function Rename-FslDisk {
     [CmdletBinding()]
 
     Param (
@@ -15,7 +15,6 @@ function Rename-Disk {
             ParameterSetName = 'Folder',
             Position = 0,
             ValuefromPipelineByPropertyName = $true,
-            ValuefromPipeline = $true,
             Mandatory = $true
         )]
         [System.String]$Folder,
@@ -23,22 +22,19 @@ function Rename-Disk {
         [Parameter(
             Position = 0,
             ValuefromPipelineByPropertyName = $true,
-            ValuefromPipeline = $true,
-            Mandatory = $true
+            ValuefromPipeline = $true
         )]
         [regex]$OriginalMatch = "^(.*?)_S-\d-\d+-(\d+-){1,14}\d+$",
 
         [Parameter(
             Position = 0,
-            ValuefromPipelineByPropertyName = $true,
-            Mandatory = $true
+            ValuefromPipelineByPropertyName = $true
         )]
         [string]$MatchesArrayNumber = 1,
 
         [Parameter(
             Position = 0,
-            ValuefromPipelineByPropertyName = $true,
-            Mandatory = $true
+            ValuefromPipelineByPropertyName = $true
         )]
         [string]$LogPath = "$env:TEMP\Rename-FslDisk.log"
 
@@ -59,7 +55,7 @@ function Rename-Disk {
                     Write-Log -Level Error "No files found in location $Folder" 
                 }
             }
-            Files {
+            File {
                 $files = foreach ($disk in $PathToDisk){
                     if (Test-Path $disk){
                         Get-ChildItem -Path $disk
@@ -72,12 +68,10 @@ function Rename-Disk {
             }
         } #switch
 
-
-
         foreach ($file in $files){
             if ($file.BaseName -match $OriginalMatch){
-                $newName = $Matches["$MatchesArrayNumber"]
-                Rename-SingleDisk -Path $file -NewName $newName -LogDir $LogPath
+                $newName = "Profile_$($Matches[1])$($file.Extension)"
+                Rename-SingleDisk -Path $file -NewName $newName -LogPath $LogPath
             }
             else{
                 Write-Log -Level Warn "$file does not match regex"
@@ -86,4 +80,4 @@ function Rename-Disk {
 
     } #Process
     END {} #End
-}  #function Rename-Disk
+}  #function Rename-FslDisk
