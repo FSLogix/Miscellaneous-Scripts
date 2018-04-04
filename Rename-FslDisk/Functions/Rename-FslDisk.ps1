@@ -30,12 +30,6 @@ function Rename-FslDisk {
             Position = 0,
             ValuefromPipelineByPropertyName = $true
         )]
-        [string]$MatchesArrayNumber = 1,
-
-        [Parameter(
-            Position = 0,
-            ValuefromPipelineByPropertyName = $true
-        )]
         [string]$LogPath = "$env:TEMP\Rename-FslDisk.log"
 
     )
@@ -45,6 +39,7 @@ function Rename-FslDisk {
         #Write-Log
         #Rename-SingleDisk
         $PSDefaultParameterValues = @{"Write-Log:Path" = "$LogPath"}
+        Write-Log -StartNew
     } # Begin
     PROCESS {
         switch ($PSCmdlet.ParameterSetName) {

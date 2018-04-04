@@ -70,4 +70,4 @@ function Add-FslReleaseFunction {
     $ctrlScript | Set-Content (Join-Path $ReleaseFolder $ControlScript)
 }
 
-Add-FslRelease -ControlScript 'Rename-FslDisk.ps1'
+Add-FslReleaseFunction -ControlScript 'Rename-FslDisk.ps1'
