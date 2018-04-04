@@ -66,7 +66,7 @@ function Rename-FslDisk {
         foreach ($file in $files){
             if ($file.BaseName -match $OriginalMatch){
                 $newName = "Profile_$($Matches[1])$($file.Extension)"
-                Rename-SingleDisk -Path $file -NewName $newName -LogPath $LogPath
+                Rename-SingleDisk -Path $file.FullName -NewName $newName -LogPath $LogPath
             }
             else{
                 Write-Log -Level Warn "$file does not match regex"
