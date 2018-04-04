@@ -9,7 +9,7 @@ function Resize-FslDisk {
             ValuefromPipeline = $true,
             Mandatory = $true
         )]
-        [System.String]$PathToDisk,
+        [System.String[]]$PathToDisk,
 
         [Parameter(
             ParameterSetName = 'Folder',
@@ -48,14 +48,18 @@ function Resize-FslDisk {
 
     BEGIN {
         Set-StrictMode -Version Latest
-        #Write-Log
-
-        if ((Get-Module -ListAvailable).Name -notcontains 'Hyper-V') {
+        #Write-Log.ps1
+        $PSDefaultParameterValues = @{
+            "Write-Log:Path" = "$LogPath"
+            "Write-Log:Verbose" = $false
+        }
+        Write-Log -StartNew
+        if ((Get-Module -ListAvailable -Verbose:$false).Name -notcontains 'Hyper-V') {
             Write-Log -Level Error 'Hyper-V Powershell module not present'
             Write-Error 'Hyper-V Powershell module not present'
             exit
         }
-        $PSDefaultParameterValues = @{"Write-Log:Path" = "$LogPath"}
+
     } # Begin
     PROCESS {
         switch ($PSCmdlet.ParameterSetName) {
@@ -86,9 +90,10 @@ function Resize-FslDisk {
                     AsJob = $AsJob
                     SizeBytes = $SizeBytes
                     ErrorAction = 'Stop'
-                    Path = $file
+                    Path = $file.FullName
                 }
                 Resize-VHD @ResizeVHDParams
+                Write-Verbose "$file has been resized to $SizeBytes Bytes"
                 Write-Log "$file has been resized to $SizeBytes Bytes"
             }
             catch{
