@@ -66,7 +66,7 @@ function Resize-FslDisk {
                     Write-Log -Level Error "No files found in location $Folder"
                 }
             }
-            Files {
+            File {
                 $files = foreach ($disk in $PathToDisk){
                     if (Test-Path $disk){
                         Get-ChildItem -Path $disk
@@ -79,13 +79,14 @@ function Resize-FslDisk {
             }
         } #switch
 
-        foreach ($file in files){
+        foreach ($file in $files){
             try{
                 $ResizeVHDParams = @{
                     Passthru = $Passthru
                     AsJob = $AsJob
                     SizeBytes = $SizeBytes
-                    ErrorLevel = Stop
+                    ErrorAction = 'Stop'
+                    Path = $file
                 }
                 Resize-VHD @ResizeVHDParams
                 Write-Log "$file has been resized to $SizeBytes Bytes"
