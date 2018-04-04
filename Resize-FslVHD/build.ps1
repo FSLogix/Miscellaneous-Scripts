@@ -20,7 +20,7 @@ function Get-WriteLog {
     Remove-Item $env:TEMP\zip -Force -Recurse
 }
 
-function Add-FslReleaseFunction {
+function Add-FslRelease {
     [cmdletbinding()]
     param (
         [Parameter(

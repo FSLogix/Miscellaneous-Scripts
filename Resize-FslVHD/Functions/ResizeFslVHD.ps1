@@ -1,4 +1,4 @@
-function Rename-Disk {
+function Resize-FslVHD {
     [CmdletBinding()]
 
     Param (
@@ -15,7 +15,6 @@ function Rename-Disk {
             ParameterSetName = 'Folder',
             Position = 0,
             ValuefromPipelineByPropertyName = $true,
-            ValuefromPipeline = $true,
             Mandatory = $true
         )]
         [System.String]$Folder,
@@ -26,35 +25,36 @@ function Rename-Disk {
             ValuefromPipeline = $true,
             Mandatory = $true
         )]
-        [regex]$OriginalMatch = "^(.*?)_S-\d-\d+-(\d+-){1,14}\d+$",
+        [uint64]$SizeBytes,
 
         [Parameter(
             Position = 0,
-            ValuefromPipelineByPropertyName = $true,
-            Mandatory = $true
+            ValuefromPipelineByPropertyName = $true
         )]
-        [string]$MatchesArrayNumber = 1,
+        [switch]$AsJob,
 
         [Parameter(
             Position = 0,
-            ValuefromPipelineByPropertyName = $true,
-            Mandatory = $true
+            ValuefromPipelineByPropertyName = $true
+        )]
+        [switch]$Passthru,
+
+        [Parameter(
+            Position = 0,
+            ValuefromPipelineByPropertyName = $true
         )]
         [string]$LogDir
-
     )
 
     BEGIN {
         Set-StrictMode -Version Latest
-
-        . .\Rename-SingleDisk
     } # Begin
     PROCESS {
         switch ($PSCmdlet.ParameterSetName) {
             Folder {
                 $files = Get-ChildItem -Path $Folder -Recurse -File -Filter *.vhd*
                 if ($files.count -eq 0){
-                    Write-Error "No files found in location $Folder" 
+                    Write-Error "No files found in location $Folder"
                     Write-Log -Level Error "No files found in location $Folder" -Path $LogDir
                 }
             }
@@ -71,18 +71,21 @@ function Rename-Disk {
             }
         } #switch
 
-
-
-        foreach ($file in $files){
-            if ($file.BaseName -match $OriginalMatch){
-                $newName = $Matches["$MatchesArrayNumber"]
-                Rename-SingleDisk -Path $file -NewName $newName -LogDir $LogDir
+        foreach ($file in files){
+            try{
+                $ResizeVHDParams = @{
+                    Passthru = $Passthru
+                    AsJob = $AsJob
+                    SizeBytes = $SizeBytes
+                    ErrorLevel = Stop
+                }
+                Resize-VHD @ResizeVHDParams
+                Write-Log "$file has been resized to $SizeBytes Bytes"
             }
-            else{
-                Write-Log -Level Warn "$file does not match regex"
+            catch{
+                Write-Log -Level Error "$file has not been resized"
             }
         }
-
     } #Process
     END {} #End
-}  #function Rename-Disk
+}  #function Resize-FslVHD
