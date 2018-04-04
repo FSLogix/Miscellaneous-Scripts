@@ -40,7 +40,7 @@ function Rename-Disk {
             ValuefromPipelineByPropertyName = $true,
             Mandatory = $true
         )]
-        [string]$LogDir
+        [string]$LogPath = "$env:TEMP\Rename-FslDisk.log"
 
     )
 
@@ -48,6 +48,7 @@ function Rename-Disk {
         Set-StrictMode -Version Latest
         #Write-Log
         #Rename-SingleDisk
+        $PSDefaultParameterValues = @{"Write-Log:Path" = "$LogPath"}
     } # Begin
     PROCESS {
         switch ($PSCmdlet.ParameterSetName) {
@@ -55,7 +56,7 @@ function Rename-Disk {
                 $files = Get-ChildItem -Path $Folder -Recurse -File -Filter *.vhd*
                 if ($files.count -eq 0){
                     Write-Error "No files found in location $Folder" 
-                    Write-Log -Level Error "No files found in location $Folder" -Path $LogDir
+                    Write-Log -Level Error "No files found in location $Folder" 
                 }
             }
             Files {
@@ -76,7 +77,7 @@ function Rename-Disk {
         foreach ($file in $files){
             if ($file.BaseName -match $OriginalMatch){
                 $newName = $Matches["$MatchesArrayNumber"]
-                Rename-SingleDisk -Path $file -NewName $newName -LogDir $LogDir
+                Rename-SingleDisk -Path $file -NewName $newName -LogDir $LogPath
             }
             else{
                 Write-Log -Level Warn "$file does not match regex"

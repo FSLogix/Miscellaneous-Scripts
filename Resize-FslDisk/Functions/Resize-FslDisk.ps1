@@ -43,12 +43,19 @@ function Resize-FslDisk {
             Position = 0,
             ValuefromPipelineByPropertyName = $true
         )]
-        [string]$LogDir = "$env:TEMP\Resize-FslDisk.log"
+        [string]$LogPath = "$env:TEMP\Resize-FslDisk.log"
     )
 
     BEGIN {
         Set-StrictMode -Version Latest
         #Write-Log
+
+        if ((Get-Module -ListAvailable).Name -notcontains 'Hyper-V') {
+            Write-Log -Level Error 'Hyper-V Powershell module not present'
+            Write-Error 'Hyper-V Powershell module not present'
+            exit
+        }
+        $PSDefaultParameterValues = @{"Write-Log:Path" = "$LogPath"}
     } # Begin
     PROCESS {
         switch ($PSCmdlet.ParameterSetName) {
@@ -56,7 +63,7 @@ function Resize-FslDisk {
                 $files = Get-ChildItem -Path $Folder -Recurse -File -Filter *.vhd*
                 if ($files.count -eq 0){
                     Write-Error "No files found in location $Folder"
-                    Write-Log -Level Error "No files found in location $Folder" -Path $LogDir
+                    Write-Log -Level Error "No files found in location $Folder"
                 }
             }
             Files {

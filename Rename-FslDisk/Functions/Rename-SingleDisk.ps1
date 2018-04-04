@@ -22,20 +22,21 @@ function Rename-SingleDisk {
             ValuefromPipelineByPropertyName = $true,
             Mandatory = $true
         )]
-        [string]$LogDir
+        [string]$LogPath
     )
 
     BEGIN {
         Set-StrictMode -Version Latest
+        $PSDefaultParameterValues = @{"Write-Log:Path" = "$LogPath"}
     } # Begin
     PROCESS {
         try{
             Rename-Item -Path $Path -NewName $NewName -ErrorAction Stop
-            Write-Log "Renamed $Path to $NewName" -Path $LogDir
+            Write-Log "Renamed $Path to $NewName"
             Write-Verbose "Renamed $Path to $NewName"
         }
         catch{
-            Write-Log -Level Error "Failed to rename $Path" -Path $LogDir
+            Write-Log -Level Error "Failed to rename $Path"
         }
     } #Process
     END {} #End
