@@ -46,6 +46,8 @@ function Rename-Disk {
 
     BEGIN {
         Set-StrictMode -Version Latest
+
+        . .\Rename-SingleDisk
     } # Begin
     PROCESS {
         switch ($PSCmdlet.ParameterSetName) {
