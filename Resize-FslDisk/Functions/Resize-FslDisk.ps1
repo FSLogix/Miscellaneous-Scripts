@@ -124,6 +124,8 @@ function Resize-FslDisk {
 
             try {
                 Dismount-VHD $vhd -ErrorAction Stop
+                Write-Verbose "$vhd has been resized to $SizeBytes Bytes"
+                Write-Log "$vhd has been resized to $SizeBytes Bytes"
             }
             catch {
                 $Error[0] | Write-Log
