@@ -33,13 +33,14 @@ function Resize-FslDisk {
             ValuefromPipelineByPropertyName = $true
         )]
         [switch]$AsJob,
-        #>
+
 
         [Parameter(
             Position = 0,
             ValuefromPipelineByPropertyName = $true
         )]
         [switch]$Passthru,
+        #>
 
         [Parameter(
             Position = 0,
@@ -88,7 +89,7 @@ function Resize-FslDisk {
         foreach ($vhd in $vhds){
             try{
                 $ResizeVHDParams = @{
-                    Passthru = $Passthru
+                    #Passthru = $Passthru
                     #AsJob = $AsJob
                     SizeBytes = $SizeBytes
                     ErrorAction = 'Stop'
@@ -111,7 +112,7 @@ function Resize-FslDisk {
             }
 
             try{
-                $partitionNumber = 2
+                $partitionNumber = 1
                 $max = $mount | Get-PartitionSupportedSize -PartitionNumber $partitionNumber -ErrorAction Stop | Select-Object -ExpandProperty Sizemax
                 $mount | Resize-Partition -size $max -PartitionNumber $partitionNumber -ErrorAction Stop
             }
