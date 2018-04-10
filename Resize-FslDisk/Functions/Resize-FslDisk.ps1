@@ -33,14 +33,14 @@ function Resize-FslDisk {
             ValuefromPipelineByPropertyName = $true
         )]
         [switch]$AsJob,
-
+        #>
 
         [Parameter(
             Position = 0,
             ValuefromPipelineByPropertyName = $true
         )]
-        [switch]$Passthru,
-        #>
+        [switch]$NewLog,
+        
 
         [Parameter(
             Position = 0,
@@ -56,7 +56,12 @@ function Resize-FslDisk {
             "Write-Log:Path" = "$LogPath"
             "Write-Log:Verbose" = $false
         }
-        Write-Log -StartNew
+
+        if ($NewLog){
+            Write-Log -StartNew
+            $NewLog = $false
+        }
+
         if ((Get-Module -ListAvailable -Verbose:$false).Name -notcontains 'Hyper-V') {
             Write-Log -Level Error 'Hyper-V Powershell module not present'
             Write-Error 'Hyper-V Powershell module not present'
