@@ -32,7 +32,7 @@ function Move-FslOulookFolder {
     } # Begin
     PROCESS {
 
-        #get-sid for usernameS
+        #get-sid for username
 
         #Mount profile VHD
 
