@@ -32,6 +32,11 @@ function Move-FslOulookFolder {
         #Requires -Modules "Hyper-V"
         #Requires -Modules "ActiveDirectory"
         #Requires -RunAsAdministrator
+
+        $PSDefaultParameterValues = @{
+            "Write-Log:Path" = "$LogPath"
+            "Write-Log:Verbose" = $false
+        }
     } # Begin
     PROCESS {
 
