@@ -80,7 +80,6 @@ function Move-FslOulookFolder {
                 $freeDrives = [char[]](68..90) | Where-Object { -not (Test-Path ($_ + ':')) } | Select-Object -last 2
             }
             
-
             #Mount both disks and assign a free drive letter
             try{
                 Mount-VHD -Path $profileVHDPath -NoDriveLetter -Passthru -ErrorAction Stop | Get-Disk | Get-Partition | Where-Object { $_.type -eq 'Basic' } | Set-Partition -NewDriveLetter $freeDrives[0]
