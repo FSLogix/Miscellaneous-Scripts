@@ -131,6 +131,7 @@ function Move-FslOulookFolder {
                 Write-Log -Level Warning -Message "Cannot DisMount profile disk for $account"
                 Write-Warning "Cannot DisMount profile disk for $account"
             }
+        Write-Log "Done $account"
         }
     } #Process
     END {} #End
