@@ -37,6 +37,7 @@ function Move-FslOulookFolder {
             "Write-Log:Path" = "$LogPath"
             "Write-Log:Verbose" = $false
         }
+        #Write-Log -StartNew
     } # Begin
     PROCESS {
 
