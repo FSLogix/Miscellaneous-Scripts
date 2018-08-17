@@ -154,10 +154,12 @@ $newVHDName = Join-Path $Env:Temp ($tempGUID + $extension)
 
 $label = 'O365-' + $userName
 
+#copy contents
 $argumentList = "copyto-vhd -filename=$newVHDName -src=$mountPath -dynamic=1 -label=$label"
 
 Start-Process -FilePath $frxPath -ArgumentList $argumentList -Wait -NoNewWindow
 
+#Clean up
 try {
     Remove-PartitionAccessPath -DiskNumber $mountedDisk.Number -PartitionNumber 1 -AccessPath $mountPath -ErrorAction Stop
 }
