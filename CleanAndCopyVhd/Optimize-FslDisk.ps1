@@ -68,7 +68,7 @@ function Remove-FslMultiOst {
     END {} #End
 }  #function Remove-FslMultiOst
 
-# to parmaaterise
+# to parmaterise
 $userName = 'jim'
 $O365Folder = "\\labdc01\FSLogixContainers\"
 $vhdx = $false
