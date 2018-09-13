@@ -44,11 +44,11 @@ function Mount-FslDisk {
 
         try {
 
-            $addPartitionAccessPathParams = [PSCustomObject]@{
+            $addPartitionAccessPathParams = @{
                 DiskNumber      = $mountedDisk.Number
                 PartitionNumber = $partitionNumber
                 AccessPath      = $mountPath
-                ErrorAction     = Stop
+                ErrorAction     = 'Stop'
             }
 
             Add-PartitionAccessPath @addPartitionAccessPathParams
