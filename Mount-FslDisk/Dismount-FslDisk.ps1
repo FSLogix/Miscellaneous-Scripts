@@ -31,24 +31,27 @@ function Dismount-FslDisk {
     } # Begin
     PROCESS {
 
+        $partitionNumber = 1
+
         try {
-            Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $Path -ErrorAction Stop
+            Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber $partitionNumber -AccessPath $Path -ErrorAction Stop
         }
         catch {
-            Write-Warning 'Failed to remove junction point'
+            Write-Error "Failed to remove junction point $Path"
         }
 
         try {
-            Dismount-DiskImage -ImagePath $ImagePath -ErrorAction Stop 
+            Dismount-DiskImage -ImagePath $ImagePath -ErrorAction Stop
         }
         catch {
-            Write-Warning 'Failed to dismount disk'
+            Write-Error "Failed to dismount disk $ImagePath"
         }
-        
 
-        
+        try {
+            Remove-Item -Path $Path -ErrorAction Stop
+        }
         catch {
-            Write-Warning "Failed to delete temp mount directory $mountPath"
+            Write-Error "Failed to delete temp mount directory $Path"
         }
     } #Process
     END {} #End

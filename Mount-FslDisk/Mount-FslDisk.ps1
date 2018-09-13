@@ -30,7 +30,7 @@ function Mount-FslDisk {
 
         #Assign vhd to a random path in temp
         $tempGUID = [guid]::NewGuid().ToString()
-        $mountPath = Join-Path $Env:Temp $tempGUID
+        $mountPath = Join-Path $Env:Temp ('FSLogixMnt-' + $tempGUID)
 
         try {
             New-Item -Path $mountPath -ItemType Directory -ErrorAction Stop | Out-Null
