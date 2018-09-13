@@ -3,7 +3,7 @@ function Mount-FslDisk {
 
     Param (
         [Parameter(
-            Position = 0,
+            Position = 1,
             ValuefromPipelineByPropertyName = $true,
             ValuefromPipeline = $true,
             Mandatory = $true
@@ -17,10 +17,11 @@ function Mount-FslDisk {
     } # Begin
     PROCESS {
 
-        #FSLogix Disk Partition Number
+        # FSLogix Disk Partition Number this won't work with vhds created with MS tools as their main partition number is 2
         $partitionNumber = 1
 
         try {
+            # Mount the disk without a drive letter and get it's info, Mount-DiskImage is used to remove reliance on Hyper-V tools
             $mountedDisk = Mount-DiskImage -ImagePath $Path -NoDriveLetter -PassThru -ErrorAction Stop | Get-DiskImage -ErrorAction Stop
         }
         catch {
@@ -28,16 +29,18 @@ function Mount-FslDisk {
             exit
         }
 
-        #Assign vhd to a random path in temp
+        # Assign vhd to a random path in temp folder so we don't have to worry about free drive letters which can be horrible
+        # New-Guid not used here for PoSh 3 compatibility
         $tempGUID = [guid]::NewGuid().ToString()
         $mountPath = Join-Path $Env:Temp ('FSLogixMnt-' + $tempGUID)
 
         try {
+            # Create directory which we will mount too
             New-Item -Path $mountPath -ItemType Directory -ErrorAction Stop | Out-Null
         }
         catch {
             Write-Error "Failed to create mounting directory $mountPath"
-            #cleanup
+            # Cleanup
             $mountedDisk | Dismount-DiskImage -ErrorAction SilentlyContinue
             exit
         }
@@ -55,12 +58,13 @@ function Mount-FslDisk {
         }
         catch {
             Write-Error "Failed to create junction point to $mountPath"
-            #cleanup
+            # Cleanup
             Remove-Item -Path $mountPath -ErrorAction SilentlyContinue
             $mountedDisk | Dismount-DiskImage -ErrorAction SilentlyContinue
             exit
         }
 
+        # Create output required for piping to Dismount-FslDisk
         $output = [PSCustomObject]@{
             Path       = $mountPath
             DiskNumber = $mountedDisk.Number

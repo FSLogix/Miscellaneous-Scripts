@@ -3,7 +3,7 @@ function Dismount-FslDisk {
 
     Param (
         [Parameter(
-            Position = 0,
+            Position = 1,
             ValuefromPipelineByPropertyName = $true,
             ValuefromPipeline = $true,
             Mandatory = $true
@@ -11,7 +11,6 @@ function Dismount-FslDisk {
         [String]$Path,
 
         [Parameter(
-            Position = 1,
             ValuefromPipelineByPropertyName = $true,
             ValuefromPipeline = $true,
             Mandatory = $true
@@ -19,7 +18,6 @@ function Dismount-FslDisk {
         [int16]$DiskNumber,
 
         [Parameter(
-            Position = 2,
             ValuefromPipelineByPropertyName = $true,
             Mandatory = $true
         )]
@@ -31,13 +29,15 @@ function Dismount-FslDisk {
     } # Begin
     PROCESS {
 
+        # FSLogix Disk Partition Number this won't work with vhds created with MS tools as their main partition number is 2
         $partitionNumber = 1
 
+        # Reverse the three tasks from Mount-FslDisk
         try {
             Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber $partitionNumber -AccessPath $Path -ErrorAction Stop
         }
         catch {
-            Write-Error "Failed to remove junction point $Path"
+            Write-Error "Failed to remove the junction point to $Path"
         }
 
         try {
