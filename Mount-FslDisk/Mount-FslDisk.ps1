@@ -8,6 +8,7 @@ function Mount-FslDisk {
             ValuefromPipeline = $true,
             Mandatory = $true
         )]
+        [alias('FullName')]
         [System.String]$Path
     )
 
