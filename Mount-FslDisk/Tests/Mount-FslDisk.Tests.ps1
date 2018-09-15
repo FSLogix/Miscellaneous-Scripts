@@ -4,28 +4,56 @@ $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 
 Describe "Testing $($sut.trimend('.ps1'))" {
 
-    Context "run" {
+    $fakeDisk = 'TestDrive:\MadeUp.vhdx'
+
+    Context "Input" {
+
         Mock -CommandName Mount-DiskImage -MockWith {
             [PSCustomObject]@{
-                ImagePath = 'TestDrive:/FakeMount.vhd'
+                ImagePath = $fakeDisk
             }
         }
         Mock -CommandName Get-DiskImage -MockWith {
             [PSCustomObject]@{
                 Number    = 3
-                ImagePath = 'TestDrive:/FakeMount.vhd'
+                ImagePath = $fakeDisk
             }
         }
         Mock -CommandName New-Item -MockWith { $null }
 
+        Mock -CommandName Add-PartitionAccessPath -MockWith { $null }
 
-        Add-PartitionAccessPath
+        It 'Runs with Named Parameter' {
+            $result = Mount-FslDisk -Path $fakeDisk
+            $result.Path | Should -not -BeNullOrEmpty
+        }
+
+        It 'Runs with Positional Parameter' {
+            $result = Mount-FslDisk $fakeDisk
+            $result.Path | Should -not -BeNullOrEmpty
+        }
+
+        It 'Runs with Pipeline by value' {
+            $result = $fakeDisk | Mount-FslDisk
+            $result.Path | Should -not -BeNullOrEmpty
+        }
+
+        It 'Runs with Pipeline by named value' {
+            $pipe = [PSCustomObject]@{
+                ImagePath = $fakeDisk
+            }
+            $result = $pipe | Mount-FslDisk
+            $result.Path | Should -not -BeNullOrEmpty
+        }
+
+
+
     }
 
-    Context 'Cleanup' {
+    Context 'Execution' {
         #Cleanup
-        Dismount-DiskImage
-        Remove-Item
+        #Dismount-DiskImage
+        #Remove-Item
     }
 
 }
