@@ -9,7 +9,12 @@ function Mount-FslDisk {
             Mandatory = $true
         )]
         [alias('FullName')]
-        [System.String]$Path
+        [System.String]$Path,
+
+        [Parameter(
+            ValuefromPipelineByPropertyName = $true
+        )]
+        [Switch]$PassThru
     )
 
     BEGIN {
@@ -25,8 +30,8 @@ function Mount-FslDisk {
             $mountedDisk = Mount-DiskImage -ImagePath $Path -NoDriveLetter -PassThru -ErrorAction Stop | Get-DiskImage -ErrorAction Stop
         }
         catch {
-            Write-Error 'Failed to mount disk'
-            exit
+            Write-Error "Failed to mount disk $Path"
+            return
         }
 
         # Assign vhd to a random path in temp folder so we don't have to worry about free drive letters which can be horrible
@@ -42,7 +47,7 @@ function Mount-FslDisk {
             Write-Error "Failed to create mounting directory $mountPath"
             # Cleanup
             $mountedDisk | Dismount-DiskImage -ErrorAction SilentlyContinue
-            exit
+            return
         }
 
         try {
@@ -61,17 +66,18 @@ function Mount-FslDisk {
             # Cleanup
             Remove-Item -Path $mountPath -ErrorAction SilentlyContinue
             $mountedDisk | Dismount-DiskImage -ErrorAction SilentlyContinue
-            exit
+            return
         }
 
-        # Create output required for piping to Dismount-FslDisk
-        $output = [PSCustomObject]@{
-            Path       = $mountPath
-            DiskNumber = $mountedDisk.Number
-            ImagePath  = $mountedDisk.ImagePath
+        if ($PassThru) {
+            # Create output required for piping to Dismount-FslDisk
+            $output = [PSCustomObject]@{
+                Path       = $mountPath
+                DiskNumber = $mountedDisk.Number
+                ImagePath  = $mountedDisk.ImagePath
+            }
+            Write-Output $output
         }
-        Write-Output $output
-
     } #Process
     END {
 

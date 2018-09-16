@@ -21,8 +21,12 @@ function Dismount-FslDisk {
             ValuefromPipelineByPropertyName = $true,
             Mandatory = $true
         )]
-        [String]$ImagePath
-    )
+        [String]$ImagePath,
+
+        [Parameter(
+            ValuefromPipelineByPropertyName = $true
+        )]
+        [Switch]$PassThru    )
 
     BEGIN {
         Set-StrictMode -Version Latest
@@ -35,6 +39,7 @@ function Dismount-FslDisk {
         # Reverse the three tasks from Mount-FslDisk
         try {
             Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber $partitionNumber -AccessPath $Path -ErrorAction Stop
+            $junctionPointRemoved = $true
         }
         catch {
             Write-Error "Failed to remove the junction point to $Path"
@@ -42,6 +47,7 @@ function Dismount-FslDisk {
 
         try {
             Dismount-DiskImage -ImagePath $ImagePath -ErrorAction Stop
+            $mountRemoved = $true
         }
         catch {
             Write-Error "Failed to dismount disk $ImagePath"
@@ -49,9 +55,19 @@ function Dismount-FslDisk {
 
         try {
             Remove-Item -Path $Path -ErrorAction Stop
+            $directoryRemoved = $true
         }
         catch {
             Write-Error "Failed to delete temp mount directory $Path"
+        }
+
+        If ($PassThru) {
+            $output = [PSCustomObject]@{
+                JunctionPointRemoved = $junctionPointRemoved
+                MountRemoved         = $mountRemoved
+                DirectoryRemoved     = $directoryRemoved
+            }
+            Write-Output $output
         }
     } #Process
     END {} #End
