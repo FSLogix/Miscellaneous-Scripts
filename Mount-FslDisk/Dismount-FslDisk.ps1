@@ -76,6 +76,7 @@ function Dismount-FslDisk {
             }
             Write-Output $output
         }
+        Write-Verbose "Dismounted $ImagePath"
     } #Process
     END {} #End
 }  #function Dismount-FslDisk

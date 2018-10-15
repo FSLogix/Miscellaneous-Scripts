@@ -78,6 +78,7 @@ function Mount-FslDisk {
             }
             Write-Output $output
         }
+        Write-Verbose "Mounted $Path"
     } #Process
     END {
 
