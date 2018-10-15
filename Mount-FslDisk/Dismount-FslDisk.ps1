@@ -26,7 +26,8 @@ function Dismount-FslDisk {
         [Parameter(
             ValuefromPipelineByPropertyName = $true
         )]
-        [Switch]$PassThru    )
+        [Switch]$PassThru    
+    )
 
     BEGIN {
         Set-StrictMode -Version Latest
@@ -36,9 +37,15 @@ function Dismount-FslDisk {
         # FSLogix Disk Partition Number this won't work with vhds created with MS tools as their main partition number is 2
         $partitionNumber = 1
 
+        if ($PassThru) {
+            $junctionPointRemoved = $false
+            $mountRemoved = $false
+            $directoryRemoved = $false
+        }
+
         # Reverse the three tasks from Mount-FslDisk
         try {
-            Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber $partitionNumber -AccessPath $Path -ErrorAction Stop
+            Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber $partitionNumber -AccessPath $Path -ErrorAction Stop | Out-Null
             $junctionPointRemoved = $true
         }
         catch {
@@ -46,7 +53,7 @@ function Dismount-FslDisk {
         }
 
         try {
-            Dismount-DiskImage -ImagePath $ImagePath -ErrorAction Stop
+            Dismount-DiskImage -ImagePath $ImagePath -ErrorAction Stop  | Out-Null
             $mountRemoved = $true
         }
         catch {
@@ -54,7 +61,7 @@ function Dismount-FslDisk {
         }
 
         try {
-            Remove-Item -Path $Path -ErrorAction Stop
+            Remove-Item -Path $Path -ErrorAction Stop  | Out-Null
             $directoryRemoved = $true
         }
         catch {

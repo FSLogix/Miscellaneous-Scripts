@@ -139,6 +139,11 @@ Describe "Testing $($sut.trimend('.ps1'))" {
     Context 'Output' {
         $result = Mount-FslDisk -Path 'fakedisk.vhdx' -PassThru
 
+        It 'Gives no output without PassThru'{
+            $emptyResult = Mount-FslDisk -Path 'fakedisk.vhdx'
+            $emptyResult | Should -BeNullOrEmpty
+        }
+
         It 'Has three properties' {
             $result | Get-Member -MemberType NoteProperty | Should -HaveCount 3
         }
